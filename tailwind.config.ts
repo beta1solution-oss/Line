@@ -19,6 +19,7 @@ export default {
       fontFamily: {
         display: ["Cormorant Garamond", "serif"],
         body: ["Inter", "sans-serif"],
+        hero: ["Bebas Neue", "Arial Black", "Impact", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

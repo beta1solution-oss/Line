@@ -84,6 +84,24 @@
     letter-spacing: 0.15em;
   }
 
+  /* Bold editorial display — thick black with subtle shadow shading, inspired by bold fashion headline style */
+  .display-hero {
+    font-family: 'Bebas Neue', 'Arial Black', 'Impact', sans-serif;
+    letter-spacing: 0.02em;
+    line-height: 0.9;
+    text-shadow: 4px 4px 0px rgba(0,0,0,0.25), 2px 2px 0px rgba(0,0,0,0.15);
+    font-weight: 400; /* Bebas Neue is always bold */
+  }
+
+  .display-hero-white {
+    font-family: 'Bebas Neue', 'Arial Black', 'Impact', sans-serif;
+    letter-spacing: 0.02em;
+    line-height: 0.9;
+    color: #fff;
+    text-shadow: 4px 4px 0px rgba(0,0,0,0.4), 2px 2px 0px rgba(0,0,0,0.2);
+    font-weight: 400;
+  }
+
   .btn-primary {
     @apply bg-[hsl(var(--brand-charcoal))] text-[hsl(var(--brand-warm-white))] px-6 py-3 text-sm font-medium tracking-widest uppercase transition-all duration-200 hover:bg-[hsl(var(--brand-terracotta))] active:scale-95 min-h-[44px] inline-flex items-center justify-center;
   }
@@ -116,6 +134,17 @@
     display: none;
   }
 
+  /* Brand-styled select — no browser default arrow, matches store design */
+  .brand-select {
+    @apply w-full border border-border px-4 py-3 text-sm focus:outline-none focus:border-[hsl(var(--brand-charcoal))] transition-colors bg-white cursor-pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+
   /* Apple Pay button styling */
   .apple-pay-btn {
     @apply w-full min-h-[52px] rounded-none flex items-center justify-center gap-2 text-sm font-semibold tracking-wider bg-black text-white transition-all duration-200 active:opacity-80;
@@ -143,6 +172,28 @@
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Announcement bar marquee */
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .announcement-marquee {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .announcement-track {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: marquee 30s linear infinite;
+    will-change: transform;
+  }
+
+  .announcement-marquee:hover .announcement-track {
+    animation-play-state: paused;
   }
 
   .line-clamp-2 {

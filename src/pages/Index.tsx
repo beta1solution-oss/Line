@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Play } from "lucide-react";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
@@ -5,20 +6,35 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/features/ProductCard";
 import { getFeaturedProducts } from "@/constants/products";
-import heroImg from "@/assets/hero-main.jpg";
-import editorial1 from "@/assets/editorial-1.jpg";
-import editorial2 from "@/assets/editorial-2.jpg";
-import tiktokBanner from "@/assets/tiktok-banner.jpg";
+import { getSiteSettingsSync, getSiteSettings, type SiteSettings } from "@/lib/siteSettings";
+import heroImgDefault from "@/assets/hero-main.jpg";
+import editorial1Default from "@/assets/editorial-1.jpg";
+import editorial2Default from "@/assets/editorial-2.jpg";
+import tiktokBannerDefault from "@/assets/tiktok-banner.jpg";
 
 const TikTokIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" aria-hidden="true">
+  <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current" aria-hidden="true">
     <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.73a4.85 4.85 0 01-1.01-.04z" />
   </svg>
 );
 
-const featuredProducts = getFeaturedProducts();
+const featuredProductsStatic = getFeaturedProducts();
 
 export default function Index() {
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(getSiteSettingsSync());
+  const [featuredProducts] = useState(featuredProductsStatic);
+
+  useEffect(() => {
+    getSiteSettings().then(setSiteSettings);
+  }, []);
+
+  const heroImg = siteSettings.heroImage || heroImgDefault;
+  const editorial1 = siteSettings.editorial1Image || editorial1Default;
+  const editorial2 = siteSettings.editorial2Image || editorial2Default;
+  const tiktokBanner = siteSettings.tiktokBannerImage || tiktokBannerDefault;
+  const tiktokHandle = siteSettings.tiktokHandle || "@linedegree";
+  const tiktokUrl = siteSettings.socialLinks?.tiktok || "https://tiktok.com";
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <AnnouncementBar />
@@ -26,28 +42,30 @@ export default function Index() {
 
       <main className="flex-1">
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
-        <section className="relative w-full min-h-[70vh] lg:min-h-[85vh] overflow-hidden bg-[hsl(var(--brand-charcoal))]">
+        <section className="relative w-full min-h-[70vh] lg:min-h-[88vh] overflow-hidden bg-[hsl(var(--brand-charcoal))]">
           <img
             src={heroImg}
             alt="LINE° — New Collection"
-            className="absolute inset-0 w-full h-full object-cover opacity-80"
+            className="absolute inset-0 w-full h-full object-cover opacity-75"
           />
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+          {/* Layered gradient for depth */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-          <div className="relative z-10 flex items-end lg:items-center h-full min-h-[70vh] lg:min-h-[85vh] px-5 lg:px-16 pb-14 lg:pb-0">
-            <div className="max-w-lg">
-              <span className="text-[hsl(var(--brand-terracotta))] text-xs font-semibold tracking-[0.3em] uppercase mb-4 block">
+          <div className="relative z-10 flex items-end lg:items-center h-full min-h-[70vh] lg:min-h-[88vh] px-5 lg:px-16 pb-14 lg:pb-0">
+            <div className="max-w-xl">
+              <span className="text-[hsl(var(--brand-terracotta))] text-xs font-semibold tracking-[0.4em] uppercase mb-5 block">
                 New Collection — SS '26
               </span>
-              <h1 className="font-display text-5xl lg:text-7xl font-light text-white leading-[0.95] tracking-wide mb-6">
-                Wear
-                <br />
-                <em className="not-italic font-medium">what
-                <br />
-                speaks.</em>
+
+              {/* Bold hero headline — Bebas Neue with shadow shading */}
+              <h1 className="display-hero-white text-[72px] lg:text-[110px] mb-6 leading-none">
+                WEAR<br />
+                <span className="text-[hsl(var(--brand-terracotta))]">WHAT</span><br />
+                SPEAKS.
               </h1>
-              <p className="text-white/70 text-sm lg:text-base leading-relaxed mb-8 max-w-xs">
+
+              <p className="text-white/70 text-sm lg:text-base leading-relaxed mb-8 max-w-xs font-body">
                 Four essentials. Endless combinations. Designed for women who move through the world with intention.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
@@ -61,10 +79,10 @@ export default function Index() {
             </div>
           </div>
 
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 right-8 hidden lg:flex flex-col items-center gap-2 text-white/40">
-            <div className="w-px h-12 bg-white/30 animate-pulse" />
-            <span className="text-[10px] tracking-[0.3em] uppercase rotate-90 origin-center mt-2">Scroll</span>
+          {/* Scroll cue */}
+          <div className="absolute bottom-8 right-8 hidden lg:flex flex-col items-center gap-2 text-white/30">
+            <div className="w-px h-14 bg-white/20 animate-pulse" />
+            <span className="text-[10px] tracking-[0.4em] uppercase mt-1">Scroll</span>
           </div>
         </section>
 
@@ -134,7 +152,6 @@ export default function Index() {
                     )}
                   </div>
 
-                  {/* Colors */}
                   <div className="flex items-center gap-2 mb-8">
                     {featuredProducts[1].colors.map((c) => (
                       <span
@@ -149,19 +166,10 @@ export default function Index() {
                     </span>
                   </div>
 
-                  <Link
-                    to={`/product/${featuredProducts[1].slug}`}
-                    className="btn-primary inline-flex text-xs px-10 py-3.5"
-                  >
+                  <Link to={`/product/${featuredProducts[1].slug}`} className="btn-primary inline-flex text-xs px-10 py-3.5">
                     Shop Now
                   </Link>
-
-                  <Link
-                    to="/shop"
-                    className="ml-5 btn-ghost text-xs"
-                  >
-                    View All →
-                  </Link>
+                  <Link to="/shop" className="ml-5 btn-ghost text-xs">View All →</Link>
                 </div>
               </div>
             </div>
@@ -190,9 +198,7 @@ export default function Index() {
             </div>
 
             <div className="mt-8 text-center sm:hidden">
-              <Link to="/shop" className="btn-secondary text-xs px-8">
-                View All Products
-              </Link>
+              <Link to="/shop" className="btn-secondary text-xs px-8">View All Products</Link>
             </div>
           </div>
         </section>
@@ -206,7 +212,7 @@ export default function Index() {
                 <div className="aspect-[4/3] lg:aspect-auto lg:h-[560px] overflow-hidden bg-[hsl(var(--muted))]">
                   <img
                     src={editorial1}
-                    alt="LINE° editorial — the effortless look"
+                    alt="LINE° editorial"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
@@ -215,13 +221,8 @@ export default function Index() {
                   <span className="text-white/60 text-[10px] font-semibold tracking-[0.3em] uppercase mb-1 block">
                     The Oversized Edit
                   </span>
-                  <h3 className="font-display text-2xl lg:text-3xl font-light text-white mb-3">
-                    Movement, Elevated.
-                  </h3>
-                  <Link
-                    to="/shop?category=tops"
-                    className="text-white text-xs font-medium tracking-widest uppercase border-b border-white/50 pb-0.5 hover:border-white transition-colors"
-                  >
+                  <h3 className="display-hero-white text-4xl lg:text-5xl mb-3">MOVEMENT,<br />ELEVATED.</h3>
+                  <Link to="/shop?category=tops" className="text-white text-xs font-medium tracking-widest uppercase border-b border-white/50 pb-0.5 hover:border-white transition-colors">
                     Shop Tops →
                   </Link>
                 </div>
@@ -242,13 +243,8 @@ export default function Index() {
                     <span className="text-white/60 text-[10px] font-semibold tracking-[0.3em] uppercase mb-1 block">
                       The Dress Edit
                     </span>
-                    <h3 className="font-display text-xl font-light text-white mb-2">
-                      Define Your Form.
-                    </h3>
-                    <Link
-                      to="/shop?category=dresses"
-                      className="text-white text-xs font-medium tracking-widest uppercase border-b border-white/50 pb-0.5 hover:border-white transition-colors"
-                    >
+                    <h3 className="display-hero-white text-3xl mb-2">DEFINE<br />YOUR FORM.</h3>
+                    <Link to="/shop?category=dresses" className="text-white text-xs font-medium tracking-widest uppercase border-b border-white/50 pb-0.5 hover:border-white transition-colors">
                       Shop Dresses →
                     </Link>
                   </div>
@@ -262,7 +258,7 @@ export default function Index() {
                     Thoughtfully made.<br />Effortlessly worn.
                   </h3>
                   <p className="text-white/50 text-xs leading-relaxed mb-4">
-                    Every piece in the LINE° collection is designed to work harder, last longer, and feel better — season after season.
+                    Every piece is designed to work harder, last longer, and feel better — season after season.
                   </p>
                   <Link to="/about" className="text-white text-xs font-medium tracking-widest uppercase border-b border-white/30 pb-0.5 hover:border-white transition-colors self-start">
                     Our Story →
@@ -277,9 +273,7 @@ export default function Index() {
         <section className="py-14 lg:py-20 bg-[hsl(var(--brand-blush))]/30">
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <div className="text-center mb-10 lg:mb-14">
-              <span className="text-[hsl(var(--brand-terracotta))] text-xs font-semibold tracking-[0.3em] uppercase mb-3 block">
-                Style Guide
-              </span>
+              <span className="text-[hsl(var(--brand-terracotta))] text-xs font-semibold tracking-[0.3em] uppercase mb-3 block">Style Guide</span>
               <h2 className="section-heading">Shop the Look</h2>
               <p className="text-muted-foreground text-sm mt-3 max-w-sm mx-auto">
                 Three ways to style the collection — from morning to night.
@@ -288,56 +282,26 @@ export default function Index() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {[
-                {
-                  outfit: "The Day Look",
-                  desc: "Wide-Leg Pants + Linen Shirt",
-                  color: "bg-[hsl(var(--muted))]",
-                  products: [featuredProducts[0], featuredProducts[2]],
-                  href: "/shop",
-                },
-                {
-                  outfit: "The Evening Look",
-                  desc: "Corset Mini Dress, styled solo",
-                  color: "bg-[hsl(var(--brand-charcoal))]/5",
-                  products: [featuredProducts[1]],
-                  href: `/product/${featuredProducts[1]?.slug}`,
-                },
-                {
-                  outfit: "The Office Look",
-                  desc: "Tailored Trousers + Linen Shirt",
-                  color: "bg-[hsl(var(--brand-blush))]/50",
-                  products: [featuredProducts[3], featuredProducts[2]],
-                  href: "/shop",
-                },
+                { outfit: "The Day Look", desc: "Wide-Leg Pants + Linen Shirt", products: [featuredProducts[0], featuredProducts[2]], href: "/shop" },
+                { outfit: "The Evening Look", desc: "Corset Mini Dress, styled solo", products: [featuredProducts[1]], href: `/product/${featuredProducts[1]?.slug}` },
+                { outfit: "The Office Look", desc: "Tailored Trousers + Linen Shirt", products: [featuredProducts[3], featuredProducts[2]], href: "/shop" },
               ].map((look) => (
                 <div key={look.outfit} className="group">
-                  <div className={`${look.color} aspect-[3/4] relative overflow-hidden mb-4`}>
+                  <div className="aspect-[3/4] relative overflow-hidden mb-4 bg-[hsl(var(--muted))]">
                     <div className="grid grid-cols-2 h-full">
-                      {look.products.slice(0, 2).map((p) => p && (
+                      {look.products.filter(Boolean).slice(0, 2).map((p) => p && (
                         <div key={p.id} className="overflow-hidden">
-                          <img
-                            src={p.images[0]}
-                            alt={p.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
+                          <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         </div>
                       ))}
                       {look.products.length === 1 && look.products[0] && (
-                        <div className="col-span-2 overflow-hidden">
-                          <img
-                            src={look.products[0].images[0]}
-                            alt={look.products[0].name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
+                        <div className="col-span-2 overflow-hidden -mt-full">
+                          <img src={look.products[0].images[0]} alt={look.products[0].name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 absolute inset-0" />
                         </div>
                       )}
                     </div>
-
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                      <Link
-                        to={look.href}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-[hsl(var(--brand-charcoal))] text-xs font-semibold tracking-widest uppercase px-5 py-2.5"
-                      >
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-300 flex items-center justify-center">
+                      <Link to={look.href} className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-[hsl(var(--brand-charcoal))] text-xs font-semibold tracking-widest uppercase px-5 py-2.5">
                         Shop Look
                       </Link>
                     </div>
@@ -358,15 +322,16 @@ export default function Index() {
                 <span className="text-[hsl(var(--brand-terracotta))] text-xs font-semibold tracking-[0.3em] uppercase mb-4 block">
                   About LINE°
                 </span>
-                <h2 className="font-display text-4xl lg:text-5xl font-light text-white leading-[1.1] tracking-wide mb-6">
-                  Fashion built<br />
-                  on <em className="not-italic font-medium text-[hsl(var(--brand-terracotta))]">intention.</em>
+                <h2 className="display-hero-white text-6xl lg:text-8xl mb-6">
+                  FASHION<br />
+                  <span className="text-[hsl(var(--brand-terracotta))]">BUILT ON</span><br />
+                  INTENTION.
                 </h2>
-                <p className="text-white/60 text-sm leading-relaxed mb-4 max-w-md">
+                <p className="text-white/60 text-sm leading-relaxed mb-4 max-w-md font-body">
                   LINE° was born from a simple belief — that getting dressed should feel like a decision, not a distraction. We design pieces that have a reason to exist in your wardrobe and a reason to stay.
                 </p>
-                <p className="text-white/40 text-sm leading-relaxed mb-8 max-w-md">
-                  Every silhouette is considered. Every fabric is chosen with care. From the wide-leg cut that makes you walk differently to the shirt you'll reach for every single week — this is fashion that works for you.
+                <p className="text-white/40 text-sm leading-relaxed mb-8 max-w-md font-body">
+                  Every silhouette is considered. Every fabric is chosen with care. From the wide-leg cut that makes you walk differently to the shirt you'll reach for every single week.
                 </p>
                 <Link to="/about" className="btn-secondary border-white/40 text-white hover:bg-white hover:text-[hsl(var(--brand-charcoal))] text-xs px-8">
                   Read Our Story
@@ -381,9 +346,7 @@ export default function Index() {
                   { label: "Real Materials", sub: "Fabrics chosen with care" },
                 ].map((stat) => (
                   <div key={stat.label} className="border border-white/10 p-5 lg:p-6 hover:border-[hsl(var(--brand-terracotta))]/50 transition-colors">
-                    <p className="font-display text-xl lg:text-2xl font-medium text-white mb-1">
-                      {stat.label}
-                    </p>
+                    <p className="font-display text-xl lg:text-2xl font-medium text-white mb-1">{stat.label}</p>
                     <p className="text-white/40 text-xs">{stat.sub}</p>
                   </div>
                 ))}
@@ -395,18 +358,15 @@ export default function Index() {
         {/* ── TIKTOK SECTION ───────────────────────────────────────────────── */}
         <section className="py-14 lg:py-20 relative overflow-hidden">
           <div className="absolute inset-0">
-            <img
-              src={tiktokBanner}
-              alt="LINE° on TikTok"
-              className="w-full h-full object-cover opacity-20"
-            />
+            <img src={tiktokBanner} alt="LINE° on TikTok" className="w-full h-full object-cover opacity-15" />
+            <div className="absolute inset-0 bg-[hsl(var(--secondary))]/80" />
           </div>
           <div className="relative max-w-[1400px] mx-auto px-4 lg:px-8 text-center">
             <TikTokIcon />
-            <h2 className="font-display text-3xl lg:text-5xl font-light tracking-wide mt-4 mb-3">
-              @linedegree on TikTok
+            <h2 className="display-hero text-[hsl(var(--brand-charcoal))] text-5xl lg:text-7xl mt-4 mb-3">
+              {tiktokHandle.toUpperCase()} ON TIKTOK
             </h2>
-            <p className="text-muted-foreground text-sm max-w-md mx-auto mb-8">
+            <p className="text-muted-foreground text-sm max-w-md mx-auto mb-8 font-body">
               Watch how real women style LINE° pieces. Follow us for new drops, styling ideas, and behind the scenes.
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
@@ -424,12 +384,7 @@ export default function Index() {
                 </div>
               ))}
             </div>
-            <a
-              href="https://tiktok.com"
-              target="_blank"
-              rel="noreferrer"
-              className="btn-primary text-xs px-8"
-            >
+            <a href={tiktokUrl} target="_blank" rel="noreferrer" className="btn-primary text-xs px-8">
               Follow LINE° on TikTok
             </a>
           </div>

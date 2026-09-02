@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, ShoppingBag, Package, Users, TrendingUp,
   CreditCard, Settings, ChevronRight, Menu, X, LogOut, Video
 } from "lucide-react";
+import { adminLogout, getAdminSession } from "@/lib/adminAuth";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
@@ -25,6 +26,12 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const session = getAdminSession();
+
+  const handleLogout = () => {
+    adminLogout();
+    navigate("/admin/login");
+  };
 
   return (
     <div className="min-h-screen bg-[hsl(var(--background))] flex">
@@ -69,11 +76,23 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
           })}
         </nav>
 
-        <div className="p-4 border-t border-[hsl(var(--sidebar-border))]">
-          <Link to="/" className="flex items-center gap-2 text-xs text-[hsl(var(--sidebar-foreground))]/50 hover:text-white transition-colors">
-            <LogOut className="w-3.5 h-3.5" />
-            Back to Store
-          </Link>
+        <div className="p-4 border-t border-[hsl(var(--sidebar-border))] space-y-2">
+          {session && (
+            <p className="text-xs text-[hsl(var(--sidebar-foreground))]/40 truncate px-1">{session.email}</p>
+          )}
+          <div className="flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2 text-xs text-[hsl(var(--sidebar-foreground))]/50 hover:text-white transition-colors">
+              <ChevronRight className="w-3.5 h-3.5 rotate-180" />
+              View Store
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 text-xs text-[hsl(var(--sidebar-foreground))]/50 hover:text-red-400 transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Logout
+            </button>
+          </div>
         </div>
       </aside>
 

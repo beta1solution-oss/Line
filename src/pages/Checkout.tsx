@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ChevronDown, Lock, AlertCircle } from "lucide-react";
+import { Lock, AlertCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -310,16 +310,13 @@ export default function Checkout() {
                   {/* Country */}
                   <div className="mb-4">
                     <label className="text-xs font-medium tracking-wider uppercase block mb-1.5">Country *</label>
-                    <div className="relative">
-                      <select
-                        {...register("country")}
-                        className="w-full border border-border px-4 py-3 text-sm focus:outline-none focus:border-[hsl(var(--brand-charcoal))] transition-colors appearance-none bg-white"
-                      >
-                        <option value="United States">United States</option>
-                        <option value="Canada">Canada</option>
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none text-muted-foreground" />
-                    </div>
+                    <select
+                      {...register("country")}
+                      className="brand-select"
+                    >
+                      <option value="United States">United States</option>
+                      <option value="Canada">Canada</option>
+                    </select>
                   </div>
 
                   {/* Address */}
@@ -356,18 +353,15 @@ export default function Checkout() {
                     </div>
                     <div>
                       <label className="text-xs font-medium tracking-wider uppercase block mb-1.5">State *</label>
-                      <div className="relative">
-                        <select
-                          {...register("state")}
-                          className="w-full border border-border px-4 py-3 text-sm focus:outline-none focus:border-[hsl(var(--brand-charcoal))] transition-colors appearance-none bg-white"
-                        >
-                          <option value="">Select state</option>
-                          {US_STATES.map((s) => (
-                            <option key={s} value={s}>{s}</option>
-                          ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none text-muted-foreground" />
-                      </div>
+                      <select
+                        {...register("state")}
+                        className="brand-select"
+                      >
+                        <option value="">Select state…</option>
+                        {US_STATES.map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
                       {errors.state && <p className="text-destructive text-xs mt-1">{errors.state.message}</p>}
                     </div>
                   </div>
@@ -435,20 +429,21 @@ export default function Checkout() {
                             : "border-border hover:border-[hsl(var(--brand-stone))]"
                         }`}
                       >
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                            <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
                               selectedProvider === "Paystack" ? "border-[hsl(var(--brand-charcoal))]" : "border-border"
                             }`}>
                               {selectedProvider === "Paystack" && (
                                 <div className="w-2 h-2 rounded-full bg-[hsl(var(--brand-charcoal))]" />
                               )}
                             </div>
-                            <span className="text-sm font-medium">Pay with Paystack</span>
+                            <span className="text-sm font-medium">Paystack</span>
                           </div>
-                          <span className="text-xs text-muted-foreground bg-[hsl(var(--muted))] px-2 py-0.5">
-                            Visa · MC · Amex{applePayAvailable ? " ·  Pay" : ""}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold text-[#00C3F7] bg-[#00C3F7]/10 border border-[#00C3F7]/30 px-1.5 py-0.5">PAYSTACK</span>
+                            <span className="text-[10px] text-muted-foreground">Visa · MC · Amex{applePayAvailable ? " · ⌘Pay" : ""}</span>
+                          </div>
                         </div>
                       </button>
                     )}
@@ -462,20 +457,21 @@ export default function Checkout() {
                             : "border-border hover:border-[hsl(var(--brand-stone))]"
                         }`}
                       >
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                            <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
                               selectedProvider === "Flutterwave" ? "border-[hsl(var(--brand-charcoal))]" : "border-border"
                             }`}>
                               {selectedProvider === "Flutterwave" && (
                                 <div className="w-2 h-2 rounded-full bg-[hsl(var(--brand-charcoal))]" />
                               )}
                             </div>
-                            <span className="text-sm font-medium">Pay with Flutterwave</span>
+                            <span className="text-sm font-medium">Flutterwave</span>
                           </div>
-                          <span className="text-xs text-muted-foreground bg-[hsl(var(--muted))] px-2 py-0.5">
-                            Visa · MC · Amex
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold text-[#F5A623] bg-[#F5A623]/10 border border-[#F5A623]/30 px-1.5 py-0.5">FLUTTERWAVE</span>
+                            <span className="text-[10px] text-muted-foreground">Visa · MC · Amex</span>
+                          </div>
                         </div>
                       </button>
                     )}
